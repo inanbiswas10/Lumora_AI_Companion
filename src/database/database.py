@@ -51,6 +51,17 @@ class Database_Manager:
             timestamp TEXT NOT NULL
         )
     """)
+        self.cursor.execute ("""
+        CREATE TABLE IF NOT EXISTS user_profile (
+
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+            key TEXT UNIQUE NOT NULL,
+
+            value TEXT NOT NULL
+
+        )
+        """)
 
         self.connection.commit ()
 
@@ -87,6 +98,23 @@ class Database_Manager:
     """)
 
         return self.cursor.fetchall ()
+
+    def get_recent_messages_function (self,limit = 10):
+
+        # Retrieve the most recent conversation messages.
+
+        self.cursor.execute (
+           """
+           SELECT speaker,message
+           FROM conversations
+           ORDER BY id DESC
+           LIMIT ?
+           """,
+           (limit,)
+        )
+        messages = self.cursor.fetchall ()
+        messages.reverse ()
+        return messages
 
     def close (self):
 

@@ -16,6 +16,7 @@ from src.utils.logger import Logger
 from src.database.database import Database_Manager
 from src.core.controller import Conversation_Controller
 from src.ai.engine import AI_Engine
+from src.memory.memory_manager import Memory_Manager
 
 
 class Lumora_Application:
@@ -28,8 +29,9 @@ class Lumora_Application:
       self.logger = Logger ()
       self.database = Database_Manager ()
       self.ai = AI_Engine ()
+      self.memory = Memory_Manager ()
       self.controller = Conversation_Controller (self.ai,self.database,self.logger)
-
+      
     def start_application_function (self):
 
       self.logger.info_function ("Starting Lumora AI !!")

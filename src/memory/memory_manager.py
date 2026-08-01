@@ -5,15 +5,25 @@
 
 Module: Memory Manager
 
-Description: This module manages Lumora AI's memory system.
+Description: Responsible for managing Lumora AI's conversational memory.
 
 Responsibilities:
-    - Store conversation history
-    - Maintain long-term memory
-    - Remember user preferences
-    - Retrieve relevant information
+    - Store short-term memory
+    - Store long-term memory
+    - Retrieve important memories
+    - Forget unnecessary information
+    - Support personalized conversations
 
 Author: Inan Biswas
 Project: Lumora AI
 =========================================================================
 """
+
+class Memory_Manager:
+
+    # Handles Lumora AI's memory system.
+
+    def __init__ (self):
+
+        print (f"[Memory] Memory Manager Initialized !!")
+        print ()
