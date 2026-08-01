@@ -39,7 +39,7 @@ class Conversation_Controller:
             user_message = input ("You: ")
             print ()
             if user_message.lower () == "exit":
-                print (f"\nLumora: See you soon dear !! Please do take care and may you have a wonderful day ahead.\n")
+                print (f"\nLumora: See you soon dear !! Please do take care of yourselfand may you have a wonderful day ahead.\n")
                 break
             response = self.ai_engine.generate_response_function (user_message)
             print (f"Lumora: {response}\n")
