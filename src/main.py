@@ -12,16 +12,17 @@ Project: Lumora AI
 =========================================================================
 """
 
-from src.core.controller import Conversation_Controller
+from src.config.settings import Settings
+from src.app import Lumora_Application
 
 def display_banner_function ():
     # Display the Lumora AI startup banner.
     
     print ()
     print ("="*60)
-    print (f"                  Welcome to Lumora AI")
+    print (f"                  Welcome to {Settings.APP_NAME} !!")
     print ()
-    print (f"Conversations that Care. Technology that Understands.")
+    print (f"{Settings.TAGLINE}")
     print ("="*60)
     print ()
 
@@ -30,8 +31,9 @@ def main_function ():
     # Main entry point of the application.
 
     display_banner_function ()
-    controller = Conversation_Controller ()
-    controller.start_function ()
+    application = Lumora_Application ()
+    application.start_application_function ()
+    application.shutdown_application_function ()
 
 if __name__ == "__main__":
     main_function ()
