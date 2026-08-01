@@ -76,6 +76,18 @@ class Database_Manager:
         print (f"[Database] Message saved ({speaker}) !!")
         print ()
 
+    def get_all_messages_function (self):
+
+        # Retrieve all stored conversations from the database.
+
+        self.cursor.execute ("""
+        SELECT speaker,message,timestamp
+        FROM conversations
+        ORDER BY id ASC
+    """)
+
+        return self.cursor.fetchall ()
+
     def close (self):
 
         # Close the database connection.

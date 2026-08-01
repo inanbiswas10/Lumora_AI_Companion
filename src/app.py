@@ -28,12 +28,23 @@ class Lumora_Application:
       self.logger = Logger ()
       self.database = Database_Manager ()
       self.ai = AI_Engine ()
-      self.controller = Conversation_Controller (self.ai)
+      self.controller = Conversation_Controller (self.ai,self.database,self.logger)
 
     def start_application_function (self):
 
       self.logger.info_function ("Starting Lumora AI !!")
       self.database.create_tables_function ()
+      messages = self.database.get_all_messages_function ()
+
+      print (f"\n========== Conversation History ==========\n")
+
+      for speaker,message,timestamp in messages:
+
+        print (f"[{timestamp}]")
+        print ()
+        print (f"{speaker} : {message}")
+        print()
+
       self.logger.info_function ("Lumora AI started successfully !!")
       self.controller.start_function ()
 
