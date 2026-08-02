@@ -52,3 +52,8 @@ build/
 .cache/
 .pytest_cache/
 .mypy_cache/
+
+# ==========================
+# API Keys
+# ==========================
+config/api_keys.py

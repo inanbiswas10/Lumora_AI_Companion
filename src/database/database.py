@@ -62,6 +62,13 @@ class Database_Manager:
 
         )
         """)
+        self.cursor.execute ("""
+        CREATE TABLE IF NOT EXISTS conversation_memories (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            memory TEXT NOT NULL,
+            created_at TEXT NOT NULL
+        )
+        """)
 
         self.connection.commit ()
 
@@ -84,8 +91,8 @@ class Database_Manager:
 
         self.connection.commit ()
 
-        print (f"[Database] Message saved ({speaker}) !!")
-        print ()
+        # print (f"[Database] Message saved ({speaker}) !!")
+        # print ()
 
     def get_all_messages_function (self):
 
@@ -115,6 +122,98 @@ class Database_Manager:
         messages = self.cursor.fetchall ()
         messages.reverse ()
         return messages
+
+    def save_user_profile_function (self,key,value):
+
+        # Save or update a user profile entry.
+
+        self.cursor.execute (
+            """
+            INSERT OR REPLACE INTO user_profile (key,value)
+            VALUES (?,?)
+           """,
+           (key,value)
+        ) 
+        self.connection.commit ()
+
+    def get_user_profile_function (self,key):
+
+        # Retrieve a user profile value using its key.
+
+        self.cursor.execute (
+            """
+            SELECT value
+            FROM user_profile
+            WHERE key = ?
+            """,
+            (key,)
+        )
+        result = self.cursor.fetchone ()
+
+        if result:
+            return result [0]
+        return None
+
+    def get_recent_messages_function (self,limit = 10):
+        
+        # Retrieve the most recent conversation messages.
+
+        query = """
+            SELECT speaker,message
+            FROM conversations
+            ORDER BY id DESC
+            LIMIT ?
+        """
+        self.cursor.execute (query,(limit,))
+        rows = self.cursor.fetchall ()
+        rows.reverse ()
+        return rows
+
+    def get_all_user_profile_function (self):
+
+        """
+        Returns the complete user profile
+        as a dictionary.
+        """
+
+        self.cursor.execute ("""
+
+            SELECT key,value
+            FROM user_profile
+
+        """)
+        rows = self.cursor.fetchall ()
+        profile = {}
+        for key,value in rows:
+            profile [key] = value
+        return profile
+
+    def save_conversation_memory_function (self,memory):
+        timestamp = datetime.now ().strftime ("%Y-%m-%d %H:%M:%S")
+
+        query = """
+            INSERT INTO conversation_memories
+            (memory,created_at)
+
+            VALUES (?, ?)
+        """
+
+        self.cursor.execute (query,(memory,timestamp))
+        self.connection.commit ()
+
+    def get_conversation_memories_function (self):
+
+        query = """
+            SELECT memory
+            FROM conversation_memories
+            ORDER BY id DESC
+        """
+
+        self.cursor.execute (query)
+
+        rows = self.cursor.fetchall ()
+
+        return [row [0] for row in rows]
 
     def close (self):
 

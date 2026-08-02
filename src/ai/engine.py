@@ -30,7 +30,7 @@ class AI_Engine:
         message = user_message.lower ()
 
         if "hello" in message or "hi" in message:
-            return ("Hello dear !! I am still learning but I am very happy to chat with you.")
+            return ("Hello dear !!")
 
         elif "how are you" in message:
             return ("I am doing well dear. Thank you so much for asking !!")
@@ -39,4 +39,4 @@ class AI_Engine:
             return ("Goodbye dear !! Thank you so much for talking to me.")
         
         else:
-            return ("That's interesting dear !! I am still under development but I would really love to learn more about it.")
+            return ("That sounds very interesting dear !! I am still under development but I would really love to know more about it.")
