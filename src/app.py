@@ -11,7 +11,8 @@ Author: Inan Biswas
 Project: Lumora AI
 =========================================================================
 """
-
+from PySide6.QtWidgets import QApplication
+from src.ui.main_window import Main_Window
 from src.utils.logger import Logger
 from src.database.database import Database_Manager
 from src.core.controller import Conversation_Controller
@@ -28,6 +29,8 @@ from src.memory.memory_retriever import Memory_Retriever
 from src.embeddings.embedding_provider import Embedding_Provider
 from src.memory.semantic_retriever import Semantic_Retriever
 from src.memory.importance_analyzer import Importance_Analyzer
+from src.ui.ui_controller import UI_Controller
+from src.ui.theme import LUMORA_THEME
 
 
 class Lumora_Application:
@@ -49,6 +52,7 @@ class Lumora_Application:
       self.importance_analyzer = Importance_Analyzer ()
       self.semantic_retriever = Semantic_Retriever (self.database,self.embedding_provider)
       self.conversation_service = Conversation_Service (self.database,self.ai,self.memory_extractor,self.memory_recall,self.semantic_memory,self.conversation_memory,self.memory_retriever,self.embedding_provider,self.importance_analyzer,self.semantic_retriever)
+      self.ui_controller = UI_Controller (self.conversation_service)
       self.controller = Conversation_Controller (self.conversation_service)
       self.preference_manager = Preference_Manager ()
       self.context_manager = Context_Manager (self.database,self.conversation_service.emotion_detector)
@@ -63,7 +67,13 @@ class Lumora_Application:
       print (f"\n[Profile] Stored Name: {name}\n")
       print ()
       self.logger.info_function ("Lumora AI started successfully !!")
-      self.controller.start_function ()
+      app = QApplication ([])
+      app.setStyleSheet (LUMORA_THEME)
+      window = Main_Window (self.ui_controller)
+      window.show ()
+      app.exec ()
+
+      # self.controller.start_function ()
 
       # messages = self.database.get_all_messages_function ()
 
