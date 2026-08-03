@@ -18,6 +18,7 @@ Project: Lumora AI
 """
 
 from sentence_transformers import SentenceTransformer
+from src.config.settings import Settings
 
 
 class Embedding_Provider:
@@ -26,7 +27,7 @@ class Embedding_Provider:
         print (f"[Embedding] Loading embedding model !!")
         print ()
 
-        self.model = SentenceTransformer ("all-MiniLM-L6-v2")
+        self.model = SentenceTransformer (Settings.EMBEDDING_MODEL)
 
         print (f"[Embedding] Model loaded successfully !!")
         print ()

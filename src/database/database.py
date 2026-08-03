@@ -100,6 +100,7 @@ class Database_Manager:
         CREATE TABLE IF NOT EXISTS conversation_memories (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             memory TEXT NOT NULL,
+            importance INTEGER DEFAULT 5,
             created_at TEXT NOT NULL
         )
         """)
@@ -119,6 +120,22 @@ class Database_Manager:
         )
         """)
 
+        self.cursor.execute ("""
+        CREATE TABLE IF NOT EXISTS episodes (
+
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+            event TEXT NOT NULL,
+
+            emotion TEXT NOT NULL,
+
+            importance REAL NOT NULL,
+
+            event_date TEXT,
+
+            created_at TEXT NOT NULL
+        )
+        """)
         self.connection.commit ()
 
         print (f"[Database] Tables created successfully !!")
@@ -154,23 +171,6 @@ class Database_Manager:
     """)
 
         return self.cursor.fetchall ()
-
-    def get_recent_messages_function (self,limit = 10):
-
-        # Retrieve the most recent conversation messages.
-
-        self.cursor.execute (
-           """
-           SELECT speaker,message
-           FROM conversations
-           ORDER BY id DESC
-           LIMIT ?
-           """,
-           (limit,)
-        )
-        messages = self.cursor.fetchall ()
-        messages.reverse ()
-        return messages
 
     def save_user_profile_function (self,key,value):
 
@@ -237,17 +237,17 @@ class Database_Manager:
             profile [key] = value
         return profile
 
-    def save_conversation_memory_function (self,memory):
+    def save_conversation_memory_function (self,memory,importance = 5):
         timestamp = datetime.now ().strftime ("%Y-%m-%d %H:%M:%S")
 
         query = """
-            INSERT INTO conversation_memories
-            (memory,created_at)
+        INSERT INTO conversation_memories
+        (memory,importance,created_at)
 
-            VALUES (?, ?)
+            VALUES (?,?,?)
         """
 
-        self.cursor.execute (query,(memory,timestamp))
+        self.cursor.execute (query,(memory,importance,timestamp))
         self.connection.commit ()
         return self.cursor.lastrowid
 
@@ -289,6 +289,48 @@ class Database_Manager:
             )
             for row in rows
         ]
+
+    def save_episode_function (self,event,emotion,importance,event_date):
+
+        created_at = datetime.now ().strftime ("%Y-%m-%d %H:%M:%S")
+        self.cursor.execute (
+            """
+            INSERT INTO episodes
+            (event,emotion,importance,event_date,created_at)
+
+            VALUES (?,?,?,?,?)
+            """,
+            (
+                event,
+                emotion,
+                importance,
+                event_date,
+                created_at
+            )
+        )
+        self.connection.commit ()
+
+    def get_recent_episodes_function (self,limit = 10):
+
+        self.cursor.execute (
+            """
+            SELECT
+                event,
+                emotion,
+                importance,
+                event_date
+
+            FROM episodes
+            ORDER BY id DESC
+            LIMIT ?
+            """,
+            (limit,)
+        )
+        return self.cursor.fetchall ()
+    
+        self.database.save_episode_function (event = "Completed AI assignment",emotion = "happy",importance = 0.92,event_date = "2026-08-03")
+        episodes = self.database.get_recent_episodes_function ()
+        print (f"{episodes}")
 
     def close (self):
 

@@ -26,6 +26,8 @@ from src.memory.preference_manager import Preference_Manager
 from src.memory.conversation_memory import Conversation_Memory
 from src.memory.memory_retriever import Memory_Retriever
 from src.embeddings.embedding_provider import Embedding_Provider
+from src.memory.semantic_retriever import Semantic_Retriever
+from src.memory.importance_analyzer import Importance_Analyzer
 
 
 class Lumora_Application:
@@ -38,14 +40,15 @@ class Lumora_Application:
       self.logger = Logger ()
       self.database = Database_Manager ()
       self.ai = AI_Engine ()
-      self.memory = Memory_Manager ()
       self.memory_extractor = Memory_Extractor ()
       self.memory_recall = Memory_Recall ()
       self.semantic_memory = Semantic_Memory (self.database)
       self.conversation_memory = Conversation_Memory (self.database)
       self.memory_retriever = Memory_Retriever (self.database)
       self.embedding_provider = Embedding_Provider ()
-      self.conversation_service = Conversation_Service (self.database,self.ai,self.memory_extractor,self.memory_recall,self.semantic_memory,self.conversation_memory,self.memory_retriever,self.embedding_provider)
+      self.importance_analyzer = Importance_Analyzer ()
+      self.semantic_retriever = Semantic_Retriever (self.database,self.embedding_provider)
+      self.conversation_service = Conversation_Service (self.database,self.ai,self.memory_extractor,self.memory_recall,self.semantic_memory,self.conversation_memory,self.memory_retriever,self.embedding_provider,self.importance_analyzer,self.semantic_retriever)
       self.controller = Conversation_Controller (self.conversation_service)
       self.preference_manager = Preference_Manager ()
       self.context_manager = Context_Manager (self.database,self.conversation_service.emotion_detector)

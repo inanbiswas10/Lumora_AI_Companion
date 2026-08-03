@@ -13,6 +13,7 @@ Project: Lumora AI
 """
 
 from src.embeddings.similarity import Similarity
+from src.config.settings import Settings
 
 
 class Semantic_Retriever:
@@ -23,7 +24,7 @@ class Semantic_Retriever:
         self.embedding_provider = embedding_provider
         self.similarity = Similarity ()
 
-    def retrieve_relevant_memories_function (self,user_message,top_k = 3):
+    def retrieve_relevant_memories_function (self,user_message,top_k = Settings.MEMORY_TOP_K):
 
         query_embedding = self.embedding_provider.generate_embedding_function (user_message)
 
@@ -38,4 +39,15 @@ class Semantic_Retriever:
             scored_memories.append ((score, memory_text))
 
         scored_memories.sort (reverse = True,key = lambda x: x [0])
-        return scored_memories [:top_k]
+        threshold = Settings.MEMORY_SIMILARITY_THRESHOLD
+        filtered_memories = []
+        for score,memory in scored_memories:
+            if (score >= threshold):
+                 filtered_memories.append ((score,memory))
+        return filtered_memories [:top_k]
+
+        print("\n========== Semantic Search ==========\n")
+
+        for score,memory in filtered_memories:
+            print (f"{score:.3f} -> {memory}")
+        print ()

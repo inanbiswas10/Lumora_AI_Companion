@@ -21,7 +21,7 @@ Project: Lumora AI
 
 class Prompt_Builder:
 
-    def build_prompt_function (self,user_profile,conversation_history,relevant_memories,emotion,user_message):
+    def build_prompt_function (self,user_profile,relevant_memories,conversation_history,emotion,user_message):
 
         prompt = """
 You are Lumora AI.
@@ -59,6 +59,18 @@ Always:
             prompt += " - No information available.\n"
 
         # ----------------------------
+        # Relevant Memories
+        # ----------------------------
+        
+        prompt += "\nRelevant Memories:\n\n"
+        
+        if relevant_memories:
+              for memory in relevant_memories:
+                  prompt += f" - {memory}\n"
+        else:
+            prompt += "No relevant memories found.\n"
+        
+        # ----------------------------
         # Conversation History
         # ----------------------------
 
@@ -69,19 +81,6 @@ Always:
                 prompt += f"{speaker}: {message}\n"
         else:
             prompt += "No previous conversation.\n"
-
-        # ----------------------------
-        # Relevant Memories
-        # ----------------------------
-
-        prompt += "\nRelevant Memories:\n\n"
-
-        if relevant_memories:
-            for memory in relevant_memories:
-                prompt += f" - {memory}\n"
-
-        else:
-            prompt += "No relevant memories found.\n"
 
         # ----------------------------
         # Emotion

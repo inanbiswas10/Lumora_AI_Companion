@@ -22,12 +22,13 @@ from src.ai.emotion_detector import Emotion_Detector
 from src.llm.groq_provider import Groq_Provider
 from src.utils.response_formatter import Response_Formatter
 from src.prompt.prompt_builder import Prompt_Builder
+from src.config.settings import Settings
 
 class Conversation_Service:
     
     # Handles conversation processing.
 
-    def __init__ (self,database,ai_engine,memory_extractor,memory_recall,semantic_memory,conversation_memory,memory_retriever,embedding_provider):
+    def __init__ (self,database,ai_engine,memory_extractor,memory_recall,semantic_memory,conversation_memory,memory_retriever,embedding_provider,importance_analyzer,semantic_retriever):
 
       self.database = database
       self.ai_engine = ai_engine
@@ -37,6 +38,8 @@ class Conversation_Service:
       self.conversation_memory = conversation_memory
       self.memory_retriever = memory_retriever
       self.embedding_provider = embedding_provider
+      self.importance_analyzer = importance_analyzer
+      self.semantic_retriever = semantic_retriever
       self.summarizer = Conversation_Summarizer ()
       self.emotion_detector = Emotion_Detector ()
       self.prompt_builder = Prompt_Builder ()
@@ -59,7 +62,10 @@ class Conversation_Service:
       # Save the user's message
       self.database.save_message_function ("User",user_message)
       if self.conversation_memory.should_store_function (user_message):
-          memory_id = self.database.save_conversation_memory_function (user_message)
+          importance = self.importance_analyzer.calculate_importance_function (user_message)
+          print (f"Importance Score = {importance}")
+          print ()
+          memory_id = self.database.save_conversation_memory_function (memory = user_message,importance = importance)
           embedding = self.embedding_provider.generate_embedding_function (user_message)
           self.database.save_embedding_function (memory_id,embedding)
           print (f"[Memory] Conversation saved.")
@@ -146,15 +152,20 @@ class Conversation_Service:
               user_profile [key] = value
 
       emotion = self.emotion_detector.detect_emotion_function (user_message)
+      relevant_memories = self.semantic_retriever.retrieve_relevant_memories_function (user_message)
+      memory_texts = []
+      for score,memory in relevant_memories:
+          memory_texts.append (memory)
+
     #   print (f"[Emotion] Detected Emotion: {emotion}")
     #   print ()
 
       # -----------------------------
       # AI Engine
       # -----------------------------
-      conversation_history = self.database.get_recent_messages_function (limit = 10)
+      conversation_history = self.database.get_recent_messages_function (limit = Settings.MAX_CONVERSATION_HISTORY)
       relevant_memories = self.memory_retriever.retrieve_memories_function ()
-      prompt = self.prompt_builder.build_prompt_function (user_profile = user_profile,conversation_history = conversation_history,relevant_memories = relevant_memories,emotion = emotion,user_message = user_message)
+      prompt = self.prompt_builder.build_prompt_function (user_profile = user_profile,relevant_memories = memory_texts,conversation_history = conversation_history,emotion = emotion,user_message = user_message)
       response = self.groq_provider.generate_response_function (prompt)
       response = self.response_formatter.format_response_function (response)
       self.database.save_message_function ("Lumora",response)
