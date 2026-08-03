@@ -27,7 +27,7 @@ class Conversation_Service:
     
     # Handles conversation processing.
 
-    def __init__ (self,database,ai_engine,memory_extractor,memory_recall,semantic_memory,conversation_memory,memory_retriever):
+    def __init__ (self,database,ai_engine,memory_extractor,memory_recall,semantic_memory,conversation_memory,memory_retriever,embedding_provider):
 
       self.database = database
       self.ai_engine = ai_engine
@@ -36,6 +36,7 @@ class Conversation_Service:
       self.semantic_memory = semantic_memory
       self.conversation_memory = conversation_memory
       self.memory_retriever = memory_retriever
+      self.embedding_provider = embedding_provider
       self.summarizer = Conversation_Summarizer ()
       self.emotion_detector = Emotion_Detector ()
       self.prompt_builder = Prompt_Builder ()
@@ -58,7 +59,9 @@ class Conversation_Service:
       # Save the user's message
       self.database.save_message_function ("User",user_message)
       if self.conversation_memory.should_store_function (user_message):
-          self.database.save_conversation_memory_function (user_message)
+          memory_id = self.database.save_conversation_memory_function (user_message)
+          embedding = self.embedding_provider.generate_embedding_function (user_message)
+          self.database.save_embedding_function (memory_id,embedding)
           print (f"[Memory] Conversation saved.")
 
       # -----------------------------

@@ -19,10 +19,44 @@ Project: Lumora AI
 """
 
 import sqlite3
+import json
 from pathlib import Path
 from datetime import datetime
 
 class Database_Manager:
+
+    def save_embedding_function (self,memory_id,embedding):
+
+        timestamp = datetime.now ().strftime ("%Y-%m-%d %H:%M:%S")
+
+        query = """
+            INSERT INTO memory_embeddings
+            (memory_id, embedding, created_at)
+
+            VALUES (?, ?, ?)
+        """
+
+        embedding_json = json.dumps (embedding)
+
+        self.cursor.execute (query,(memory_id,embedding_json,timestamp)
+        )
+        self.connection.commit ()
+
+    def get_embedding_function (self,memory_id):
+        import json
+
+        query = """
+            SELECT embedding
+            FROM memory_embeddings
+            WHERE memory_id = ?
+        """
+        self.cursor.execute (query,(memory_id,))
+        row = self.cursor.fetchone ()
+
+        if row:
+            return json.loads (row [0])
+        return None
+
 
     # Handles all database operations for Lumora AI.
 
@@ -67,6 +101,21 @@ class Database_Manager:
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             memory TEXT NOT NULL,
             created_at TEXT NOT NULL
+        )
+        """)
+        self.cursor.execute ("""
+        CREATE TABLE IF NOT EXISTS memory_embeddings (
+
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+        memory_id INTEGER NOT NULL,
+
+        embedding TEXT NOT NULL,
+
+        created_at TEXT NOT NULL,
+
+        FOREIGN KEY (memory_id)
+            REFERENCES conversation_memories(id)
         )
         """)
 
@@ -200,6 +249,7 @@ class Database_Manager:
 
         self.cursor.execute (query,(memory,timestamp))
         self.connection.commit ()
+        return self.cursor.lastrowid
 
     def get_conversation_memories_function (self):
 
@@ -214,6 +264,31 @@ class Database_Manager:
         rows = self.cursor.fetchall ()
 
         return [row [0] for row in rows]
+
+    def get_all_embeddings_function (self):
+
+        query = """
+            SELECT
+                conversation_memories.id,
+                conversation_memories.memory,
+                memory_embeddings.embedding
+
+            FROM conversation_memories
+            JOIN memory_embeddings
+            ON conversation_memories.id = memory_embeddings.memory_id
+        """
+        self.cursor.execute (query)
+        import json
+        rows = self.cursor.fetchall ()
+
+        return [
+            (
+                 row [0],          # memory id
+                 row [1],          # memory text
+                 json.loads (row[2])
+            )
+            for row in rows
+        ]
 
     def close (self):
 

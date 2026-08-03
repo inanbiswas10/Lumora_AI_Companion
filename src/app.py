@@ -25,6 +25,7 @@ from src.context.context_manager import Context_Manager
 from src.memory.preference_manager import Preference_Manager
 from src.memory.conversation_memory import Conversation_Memory
 from src.memory.memory_retriever import Memory_Retriever
+from src.embeddings.embedding_provider import Embedding_Provider
 
 
 class Lumora_Application:
@@ -43,10 +44,12 @@ class Lumora_Application:
       self.semantic_memory = Semantic_Memory (self.database)
       self.conversation_memory = Conversation_Memory (self.database)
       self.memory_retriever = Memory_Retriever (self.database)
-      self.conversation_service = Conversation_Service (self.database,self.ai,self.memory_extractor,self.memory_recall,self.semantic_memory,self.conversation_memory,self.memory_retriever)
+      self.embedding_provider = Embedding_Provider ()
+      self.conversation_service = Conversation_Service (self.database,self.ai,self.memory_extractor,self.memory_recall,self.semantic_memory,self.conversation_memory,self.memory_retriever,self.embedding_provider)
       self.controller = Conversation_Controller (self.conversation_service)
       self.preference_manager = Preference_Manager ()
       self.context_manager = Context_Manager (self.database,self.conversation_service.emotion_detector)
+      
       
     def start_application_function (self):
 
