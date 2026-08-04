@@ -25,4 +25,9 @@ class UI_Controller:
     def send_message_function (self,user_message):
         response = self.conversation_service.process_message_function (user_message)
         return response
+
+    def stream_response_function (self,user_message):
+        response = self.conversation_service.process_message_function (user_message)
+        for word in response.split ():
+            yield word + " "
       

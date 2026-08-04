@@ -5,13 +5,13 @@
 
 Module: Theme
 
-Description: Central stylesheet for Lumora AI Desktop. Inspired by the official Lumora project poster.
+Description: Central stylesheet for the Lumora AI Desktop Application.Inspired by the official Lumora project poster.
 
 Author: Inan Biswas
 Project: Lumora AI
 =========================================================================
-"""
 
+"""
 
 LUMORA_THEME = """
 
@@ -38,8 +38,8 @@ QMainWindow{
 QWidget{
     background:transparent;
     color:white;
+    font-family:"Segoe UI";
     font-size:15px;
-    font-family:Segoe UI;
 }
 
 
@@ -56,25 +56,76 @@ QWidget{
         stop:1 #171F38
     );
 
-    border-right:1px solid #26365A;
+    border-right:1px solid #2D3E63;
 }
 
+
+/* ============================================================
+                        AVATAR PANEL
+============================================================ */
+
+#avatarPanel{
+
+    background:qlineargradient(
+        x1:0,
+        y1:0,
+        x2:0,
+        y2:1,
+        stop:0 #0A1020,
+        stop:1 #171F38
+    );
+
+    border-left:1px solid #2D3E63;
+}
+
+
+/* ============================================================
+                        TITLES
+============================================================ */
+
+#title{
+
+    color:#F6C667;
+
+    font-size:24px;
+
+    font-weight:700;
+}
+
+
+#subtitle{
+
+    color:#C7D2E5;
+
+    font-size:13px;
+}
+
+
+/* ============================================================
+                        LABELS
+============================================================ */
 
 QLabel{
 
     color:white;
+
+    background:transparent;
 }
 
 
+/* ============================================================
+                        BUTTONS
+============================================================ */
+
 QPushButton{
 
-    background:#232E43;
+    background:#222F46;
 
-    border:1px solid #32486D;
+    border:1px solid #39517D;
 
     border-radius:16px;
 
-    padding:14px;
+    padding:12px;
 
     color:white;
 
@@ -97,40 +148,14 @@ QPushButton:pressed{
 
 
 /* ============================================================
-                        CHAT AREA
-============================================================ */
-
-QScrollArea{
-
-    background:#0C1223;
-
-    border:1px solid #26385A;
-
-    border-radius:20px;
-}
-
-
-QTextEdit{
-
-    background:#0C1223;
-
-    border:none;
-
-    color:white;
-
-    selection-background-color:#7A5AF8;
-}
-
-
-/* ============================================================
                     MESSAGE INPUT
 ============================================================ */
 
 QLineEdit{
 
-    background:#141D31;
+    background:#131C2F;
 
-    border:2px solid #32486D;
+    border:2px solid #39517D;
 
     border-radius:18px;
 
@@ -144,7 +169,7 @@ QLineEdit{
 
 QLineEdit:focus{
 
-    border:2px solid #7A5AF8;
+    border:2px solid #8C6CFF;
 }
 
 
@@ -155,10 +180,12 @@ QLineEdit:focus{
 #sendButton{
 
     background:qlineargradient(
-        x1:0,y1:0,
-        x2:1,y2:1,
-        stop:0 #6E5BFF,
-        stop:1 #9B5CFF
+        x1:0,
+        y1:0,
+        x2:1,
+        y2:1,
+        stop:0 #6C5BFF,
+        stop:1 #A45DFF
     );
 
     border:none;
@@ -167,20 +194,42 @@ QLineEdit:focus{
 
     color:white;
 
-    font-size:16px;
-
     font-weight:bold;
+
+    font-size:18px;
 }
 
 
 #sendButton:hover{
 
     background:qlineargradient(
-        x1:0,y1:0,
-        x2:1,y2:1,
+        x1:0,
+        y1:0,
+        x2:1,
+        y2:1,
         stop:0 #816DFF,
-        stop:1 #AE76FF
+        stop:1 #B576FF
     );
+}
+
+
+/* ============================================================
+                        CHAT AREA
+============================================================ */
+
+QScrollArea{
+
+    background:#0D1526;
+
+    border:1px solid #2C3E63;
+
+    border-radius:20px;
+}
+
+
+QScrollArea QWidget{
+
+    background:transparent;
 }
 
 
@@ -191,17 +240,19 @@ QLineEdit:focus{
 #userBubble{
 
     background:qlineargradient(
-        x1:0,y1:0,
-        x2:1,y2:0,
-        stop:0 #6B5CFF,
-        stop:1 #9B63FF
+        x1:0,
+        y1:0,
+        x2:1,
+        y2:0,
+        stop:0 #6958FF,
+        stop:1 #9A5EFF
     );
+
+    color:white;
 
     border-radius:22px;
 
-    padding:18px;
-
-    color:white;
+    padding:16px;
 }
 
 
@@ -211,15 +262,15 @@ QLineEdit:focus{
 
 #lumoraBubble{
 
-    background:#232C41;
+    background:#222D43;
 
-    border:1px solid #344C77;
+    border:1px solid #3A5280;
+
+    color:white;
 
     border-radius:22px;
 
-    padding:18px;
-
-    color:white;
+    padding:16px;
 }
 
 
@@ -229,7 +280,7 @@ QLineEdit:focus{
 
 QScrollBar:vertical{
 
-    background:#141B2E;
+    background:#131C2F;
 
     width:12px;
 
@@ -247,53 +298,29 @@ QScrollBar::handle:vertical{
 
 QScrollBar::handle:vertical:hover{
 
-    background:#9D7CFF;
+    background:#A285FF;
 }
 
 
 QScrollBar::add-line:vertical,
 QScrollBar::sub-line:vertical{
 
-    height:0;
+    height:0px;
 }
-
 
 /* ============================================================
-                    STATUS PANEL
+                    TYPING INDICATOR
 ============================================================ */
 
-#avatarPanel{
+#typingIndicator{
 
-    background:qlineargradient(
-        x1:0,y1:0,
-        x2:0,y2:1,
-        stop:0 #0A1020,
-        stop:1 #171F38
-    );
+    color:#67D7F5;
 
-    border-left:1px solid #26365A;
-}
+    font-size:14px;
 
+    font-style:italic;
 
-/* ============================================================
-                    HEADINGS
-============================================================ */
-
-#title{
-
-    color:#F6C667;
-
-    font-size:24px;
-
-    font-weight:bold;
-}
-
-
-#subtitle{
-
-    color:#C7D2E5;
-
-    font-size:13px;
+    padding:10px;
 }
 
 """

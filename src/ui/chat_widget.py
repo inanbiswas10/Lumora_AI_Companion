@@ -12,11 +12,8 @@ Project: Lumora AI
 =========================================================================
 """
 
-from PySide6.QtWidgets import (QWidget,QLabel,QHBoxLayout,QFrame
-)
-
+from PySide6.QtWidgets import (QWidget,QLabel,QHBoxLayout,QFrame)
 from PySide6.QtCore import Qt
-
 
 class Chat_Widget (QWidget):
 
@@ -42,11 +39,11 @@ class Chat_Widget (QWidget):
 
         bubble_layout = QHBoxLayout ()
 
-        label = QLabel (self.message)
+        self.message_label = QLabel (self.message)
 
-        label.setWordWrap (True)
+        self.message_label.setWordWrap (True)
 
-        bubble_layout.addWidget (label)
+        bubble_layout.addWidget (self.message_label)
 
         bubble.setLayout (bubble_layout)
 
@@ -63,3 +60,9 @@ class Chat_Widget (QWidget):
             outer_layout.addStretch ()
 
         self.setLayout (outer_layout)
+
+    def set_message_function (self,message):
+
+        self.message = message
+
+        self.message_label.setText (message)
