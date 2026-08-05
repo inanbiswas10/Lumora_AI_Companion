@@ -5,7 +5,12 @@
 
 Module: Emotion Detector
 
-Description: Detects the emotional tone of the user's message.
+Description: Detects the emotional state of the user from messages.
+
+Responsibilities:
+    - Detect emotion
+    - Return confidence score
+    - Support future AI-based emotion analysis
 
 Author: Inan Biswas
 Project: Lumora AI
@@ -13,60 +18,67 @@ Project: Lumora AI
 """
 
 class Emotion_Detector:
-    
-    # Detects basic emotions from user messages.
 
-    def detect_emotion_function (self,message):
-      message = message.lower ()
+    def detect_emotion_function (self,user_message):
 
-      happy_words = [
-          "happy",
-          "great",
-          "awesome",
-          "excited",
-          "wonderful",
-          "fantastic",
-          "good",
-          "joy"
-      ]
-      sad_words = [
-          "sad",
-          "depressed",
-          "upset",
-          "cry",
-          "hurt",
-          "lonely",
-          "miserable"
-      ]
-      angry_words = [
-          "angry",
-          "furious",
-          "annoyed",
-          "mad",
-          "hate",
-          "frustrated"
-      ]
-      anxious_words = [
-          "anxious",
-          "worried",
-          "nervous",
-          "stress",
-          "panic",
-          "afraid"
-      ]
-      for word in happy_words:
-          if word in message:
-              return "Happy"
+        message = user_message.lower ()
 
-      for word in sad_words:
-          if word in message:
-              return "Sad"
+        emotion_keywords = {
 
-      for word in angry_words:
-          if word in message:
-              return "Angry"
+            "happy": [
+                "happy",
+                "excited",
+                "great",
+                "awesome",
+                "amazing",
+                "wonderful",
+                "good news",
+                "finally",
+                "won",
+                "success"
+            ],
 
-      for word in anxious_words:
-        if word in message:
-            return "Anxious"
-      return "Neutral"
+            "sad": [
+                "sad",
+                "cry",
+                "depressed",
+                "lonely",
+                "hurt",
+                "miss",
+                "upset",
+                "heartbroken"
+            ],
+
+            "angry": [
+                "angry",
+                "mad",
+                "annoyed",
+                "hate",
+                "furious"
+            ],
+
+            "fear": [
+                "afraid",
+                "fear",
+                "scared",
+                "nervous",
+                "worried",
+                "anxious"
+            ],
+
+            "surprised": [
+                "wow",
+                "unexpected",
+                "can't believe",
+                "really",
+                "seriously"
+            ]
+        }
+        for emotion,keywords in emotion_keywords.items ():
+
+            for keyword in keywords:
+
+                if keyword in message:
+
+                    return emotion,0.90
+        return "neutral",0.50

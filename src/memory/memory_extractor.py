@@ -19,9 +19,11 @@ Project: Lumora AI
 
 class Memory_Extractor:
     
-    # Extract important information from user messages.
     def extract_information_function (self,user_message):
-        message = user_message.lower ().strip ()
+
+        original_message = user_message.strip ()
+        message = original_message.lower ()
+
         patterns = {
             "name": [
                 "my name is",
@@ -32,37 +34,43 @@ class Memory_Extractor:
                 "you can call me"
             ],
 
-            "favorite_colour": [
-                "my favourite colour is",
-                "my favorite colour is",
-                "my favourite color is",
-                "my favorite color is"
+        "favorite_colour": [
+            "my favourite colour is",
+            "my favorite colour is",
+            "my favourite color is",
+            "my favorite color is"
             ],
 
-            "university": [
-                "i study at",
-                "i study in",
-                "i am studying at"
+        "university": [
+            "i study at",
+            "i study in",
+            "i am studying at"
             ],
 
-            "workplace": [
-                "i work at",
-                "i work for"
+        "workplace": [
+            "i work at",
+            "i work for"
             ],
 
-            "hobby": [
-                "my hobby is",
-                "my hobbies are"
+        "hobby": [
+            "my hobby is",
+            "my hobbies are"
             ],
 
-            "interest": [
-                "i love",
-                "i enjoy",
-                "i'm interested in"
+        "interest": [
+            "i love",
+            "i enjoy",
+            "i'm interested in"
             ]
         }
-        for key,phrases in patterns.items ():
+        for key,phrases in patterns.items():
+
             for phrase in phrases:
-                if message.startswith(phrase):
-                    value = user_message [len (phrase):].strip ()
-                    return (key,value)
+
+                if message.startswith (phrase):
+
+                    value = original_message [len (phrase):].strip()
+
+                    if value:
+                        return (key,value)
+        return None

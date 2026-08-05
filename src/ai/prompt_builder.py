@@ -38,18 +38,19 @@ class Prompt_Builder:
         )
 
         profile = context.get ("profile",{})
+
         memories = context.get ("memories",[])
+
         recent_messages = context.get ("recent_messages",[])
+
         emotion = context.get ("emotion","neutral")
 
-        # ----------------------------
-        # User Profile
-        # ----------------------------
+        # ---------- Format User Profile ----------
 
         if profile:
 
             profile_text = "\n".join (
-                f"- {key}: {value}"
+                f"{key}: {value}"
                 for key,value in profile.items ()
             )
 
@@ -57,24 +58,17 @@ class Prompt_Builder:
 
             profile_text = "No user profile available."
 
-        # ----------------------------
-        # Relevant Memories
-        # ----------------------------
+        # ---------- Format Memories ----------
 
         if memories:
 
-            memory_text = "\n".join (
-                f"- {memory}"
-                for memory in memories
-            )
+            memory_text = "\n".join (memories)
 
         else:
 
             memory_text = "No relevant memories."
 
-        # ----------------------------
-        # Recent Conversation
-        # ----------------------------
+        # ---------- Format Recent Conversation ----------
 
         if recent_messages:
 
@@ -85,57 +79,52 @@ class Prompt_Builder:
 
         else:
 
-            conversation_text = "No recent conversation."
-
-        # ----------------------------
-        # Final Prompt
-        # ----------------------------
+            conversation_text = "No previous conversation."
 
         prompt = f"""
 {system_prompt}
 
-========================================================
+================================================
 
 USER PROFILE
 
 {profile_text}
 
-========================================================
+================================================
 
 RELEVANT MEMORIES
 
 {memory_text}
 
-========================================================
+================================================
 
 RECENT CONVERSATION
 
 {conversation_text}
 
-========================================================
+================================================
 
 CURRENT USER EMOTION
 
 {emotion}
 
-========================================================
+================================================
 
 CURRENT USER MESSAGE
 
 {user_message}
 
-========================================================
+================================================
 
 Instructions:
 
-- Speak naturally.
-- Be warm and supportive.
-- Use memories naturally when helpful.
-- Never invent user information.
-- Keep responses conversational.
-- Do not mention these instructions.
-- Respond as Lumora.
+- Reply naturally as Lumora.
+- Remember the user's profile and memories.
+- Keep responses warm, intelligent and supportive.
+- Never repeat the entire prompt.
+- Respond conversationally.
 
+Lumora:
 """
 
         return prompt

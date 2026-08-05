@@ -73,19 +73,6 @@ class Lumora_Application:
       window.show ()
       app.exec ()
 
-      # self.controller.start_function ()
-
-      # messages = self.database.get_all_messages_function ()
-
-      # print (f"\n========== Conversation History ==========\n")
-
-      # for speaker,message,timestamp in messages:
-
-      #   print (f"[{timestamp}]")
-      #   print ()
-      #   print (f"{speaker} : {message}")
-      #   print ()
-
     def shutdown_application_function (self):
 
       self.database.close ()

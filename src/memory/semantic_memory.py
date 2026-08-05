@@ -5,8 +5,7 @@
 
 Module: Semantic Memory
 
-Description:
-Retrieves memories that are relevant to the current conversation.
+Description: Retrieves memories that are relevant to the current conversation.
 
 Responsibilities:
     - Search relevant memories
@@ -18,21 +17,24 @@ Project: Lumora AI
 =========================================================================
 """
 
-
 class Semantic_Memory:
 
-  def __init__ (self,database):
-     self.database = database
+    def __init__ (self,database):
+        self.database = database
 
-  def retrieve_relevant_memories_function (self, user_message):
+    def retrieve_relevant_memories_function (self,user_message):
 
-      """
-      Placeholder implementation.
+        user_message = user_message.lower ()
 
-      Later this will perform semantic similarity search
-      using embeddings.
+        memories = self.database.get_conversation_memories_function ()
 
-      For now it simply returns an empty list.
-      """
+        relevant = []
 
-      return []
+        for memory in memories:
+
+            if any (word in memory.lower ()
+                    
+                   for word in user_message.split ()):
+
+                relevant.append(memory)
+        return relevant

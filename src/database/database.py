@@ -70,7 +70,7 @@ class Database_Manager:
 
         self.cursor = self.connection.cursor ()
 
-        print (f"[Database] Database connected successfully !!")
+        print (f"Database connected successfully !!")
         print ()
 
     def create_tables_function (self):
@@ -136,9 +136,34 @@ class Database_Manager:
             created_at TEXT NOT NULL
         )
         """)
+        self.cursor.execute ("""
+
+        CREATE TABLE IF NOT EXISTS emotions (
+
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+            emotion TEXT NOT NULL,
+
+            timestamp TEXT NOT NULL
+        )
+        """)
+        self.cursor.execute ("""
+        CREATE TABLE IF NOT EXISTS relationships (
+
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+            name TEXT NOT NULL,
+
+            relationship TEXT NOT NULL,
+
+            notes TEXT,
+
+            created_at TEXT NOT NULL
+        )
+        """)
         self.connection.commit ()
 
-        print (f"[Database] Tables created successfully !!")
+        print (f"Database Tables created successfully !!")
         print ()
 
     def save_message_function (self,speaker:str,message:str):
@@ -157,9 +182,6 @@ class Database_Manager:
 
         self.connection.commit ()
 
-        # print (f"[Database] Message saved ({speaker}) !!")
-        # print ()
-
     def get_all_messages_function (self):
 
         # Retrieve all stored conversations from the database.
@@ -169,7 +191,6 @@ class Database_Manager:
         FROM conversations
         ORDER BY id ASC
     """)
-
         return self.cursor.fetchall ()
 
     def save_user_profile_function (self,key,value):
@@ -327,10 +348,85 @@ class Database_Manager:
             (limit,)
         )
         return self.cursor.fetchall ()
-    
-        self.database.save_episode_function (event = "Completed AI assignment",emotion = "happy",importance = 0.92,event_date = "2026-08-03")
-        episodes = self.database.get_recent_episodes_function ()
-        print (f"{episodes}")
+
+    def save_emotion_function (self,emotion,timestamp):
+
+        self.cursor.execute(
+            """
+            INSERT INTO emotions
+            (emotion,timestamp)
+
+            VALUES (?,?)
+            """,
+            (
+                emotion,
+                timestamp
+            )
+        )
+        self.connection.commit ()
+
+    def get_recent_emotions_function (self,limit = 10):
+
+        self.cursor.execute (
+            """
+            SELECT emotion
+
+            FROM emotions
+
+            ORDER BY id DESC
+
+            LIMIT ?
+            """,
+            (limit,)
+        )
+        rows = self.cursor.fetchall ()
+
+        return [row [0] for row in rows]
+
+    def save_relationship_function (self,name,relationship,notes = ""):
+
+        timestamp = datetime.now ().strftime ("%Y-%m-%d %H:%M:%S")
+
+        self.cursor.execute (
+
+        """
+        INSERT INTO relationships
+        (name,relationship,notes,created_at)
+
+        VALUES (?,?,?,?)
+        """,
+        (name,relationship,notes,timestamp))
+
+        self.connection.commit()
+
+    def get_relationships_function (self):
+
+        self.cursor.execute ("""
+
+            SELECT
+
+                name,
+
+                relationship,
+
+                notes
+
+                FROM relationships
+        """)
+        rows = self.cursor.fetchall ()
+
+        return [
+
+            {
+
+                "name": row [0],
+
+                "relationship": row [1],
+
+                "notes": row [2]
+            }
+            for row in rows
+        ]
 
     def close (self):
 
@@ -338,7 +434,7 @@ class Database_Manager:
 
         self.connection.close ()
 
-        print (f"[Database] Database connection closed !!")
+        print (f"Database connection closed successfully !!")
         print ()
 
     

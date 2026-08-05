@@ -5,7 +5,12 @@
 
 Module: Emotion Detector
 
-Description: Detects the user's emotional state together with a confidence score.
+Description: Detects the emotional state of the user from their message.
+
+Responsibilities:
+    - Detect emotions
+    - Estimate confidence
+    - Support future AI emotion models
 
 Author: Inan Biswas
 Project: Lumora AI
@@ -17,7 +22,7 @@ class Emotion_Detector:
 
         message = user_message.lower ()
 
-        emotions = {
+        emotion_keywords = {
 
             "happy": [
                 "happy",
@@ -25,24 +30,24 @@ class Emotion_Detector:
                 "awesome",
                 "excited",
                 "amazing",
-                "love"
+                "fantastic",
+                "wonderful"
             ],
 
             "sad": [
                 "sad",
+                "depressed",
                 "cry",
                 "lonely",
-                "hurt",
-                "depressed",
-                "broken"
+                "upset",
+                "hurt"
             ],
 
             "angry": [
                 "angry",
-                "hate",
-                "annoyed",
+                "mad",
                 "furious",
-                "mad"
+                "annoyed"
             ],
 
             "fear": [
@@ -51,26 +56,20 @@ class Emotion_Detector:
                 "worried",
                 "anxious",
                 "nervous"
+            ],
+
+            "love": [
+                "love",
+                "care",
+                "miss",
+                "hug"
             ]
         }
-        highest_matches = 0
-        detected_emotion = "neutral"
+        for emotion,keywords in emotion_keywords.items ():
 
-        for emotion,words in emotions.items ():
+            for keyword in keywords:
 
-            matches = 0
+                if keyword in message:
 
-            for word in words:
-
-                if word in message:
-                    matches += 1
-
-            if matches > highest_matches:
-                highest_matches = matches
-                detected_emotion = emotion
-
-        if detected_emotion == "neutral":
-            confidence = 0.50
-        else:
-            confidence = min (0.60 + (highest_matches*0.15),0.98)
-        return detected_emotion,confidence
+                    return emotion
+        return "neutral"

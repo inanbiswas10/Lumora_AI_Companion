@@ -15,9 +15,14 @@ Author: Inan Biswas
 Project: Lumora AI
 =========================================================================
 """
+
 class Importance_Analyzer:
+
     def calculate_importance_function (self,memory):
-        memory = memory.lower ()
+
+        key,value = memory
+
+        memory_text = f"{key} {value}".lower ()
 
         important_keywords = [
 
@@ -39,7 +44,8 @@ class Importance_Analyzer:
             "brother"
         ]
         for keyword in important_keywords:
-            if keyword in memory:
+
+            if keyword in memory_text:
                 return 9
 
         medium_keywords = [
@@ -52,11 +58,9 @@ class Importance_Analyzer:
             "movie",
             "football",
             "cricket"
-
         ]
         for keyword in medium_keywords:
-            if keyword in memory:
-                return 7
-            return 3
 
-        
+            if keyword in memory_text:
+                return 7
+        return 3

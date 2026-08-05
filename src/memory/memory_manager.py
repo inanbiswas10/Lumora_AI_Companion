@@ -32,3 +32,29 @@ class Memory_Manager:
 
     def retrieve_relevant_memories_function (self,user_message):
         return self.semantic_retriever.retrieve_relevant_memories_function (user_message)
+
+    def process_user_message_function (self,user_message):
+
+        memory = self.memory_extractor.extract_information_function (user_message)
+
+        if memory is None:
+            return
+
+        importance = self.importance_analyzer.calculate_importance_function (memory)
+
+        self.semantic_memory.store_memory_function (memory,importance)
+
+    def recall_user_information_function (self,user_message):
+
+        key = self.memory_recall.recall_information_function (user_message)
+
+        if key is None:
+            return None
+
+        value = self.database.get_user_profile_function (key)
+
+        if value is None:
+            return None
+        return value
+
+    
