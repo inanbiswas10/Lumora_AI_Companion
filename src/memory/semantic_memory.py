@@ -5,12 +5,12 @@
 
 Module: Semantic Memory
 
-Description: Retrieves memories that are relevant to the current conversation.
+Description: Stores and retrieves semantic memories that Lumora can use during future conversations.
 
 Responsibilities:
-    - Search relevant memories
-    - Prepare for embedding search
-    - Support future vector databases
+    - Store semantic memories
+    - Retrieve relevant memories
+    - Support future embedding search
 
 Author: Inan Biswas
 Project: Lumora AI
@@ -20,21 +20,54 @@ Project: Lumora AI
 class Semantic_Memory:
 
     def __init__ (self,database):
+
         self.database = database
 
-    def retrieve_relevant_memories_function (self,user_message):
+    # ---------------------------------------------------------
 
-        user_message = user_message.lower ()
+    def store_memory_function (
+        self,
+        memory,
+        importance = 5
+    ):
 
-        memories = self.database.get_conversation_memories_function ()
+        """
+        Store a semantic memory.
+        """
 
-        relevant = []
+        if isinstance (memory,tuple):
 
-        for memory in memories:
+            key,value = memory
 
-            if any (word in memory.lower ()
-                    
-                   for word in user_message.split ()):
+            memory_text = f"{key}: {value}"
 
-                relevant.append(memory)
-        return relevant
+        else:
+
+            memory_text = str (memory)
+
+        self.database.save_conversation_memory_function (
+            memory_text,
+            importance
+        )
+
+    # ---------------------------------------------------------
+
+    def retrieve_relevant_memories_function (
+        self,
+        user_message
+    ):
+
+        """
+        Placeholder implementation.
+
+        Later this will use embeddings and cosine similarity.
+
+        For now it simply returns the most recent stored memories.
+        """
+
+        memories = (
+            self.database
+            .get_conversation_memories_function ()
+        )
+
+        return memories [:5]

@@ -5,12 +5,18 @@
 
 Module: Emotion Detector
 
-Description: Detects the user's emotional state together with a confidence score.
+Description: Detects the emotional state of the user from messages.
+
+Responsibilities:
+    - Detect emotions
+    - Estimate confidence
+    - Prepare for AI emotion models
 
 Author: Inan Biswas
 Project: Lumora AI
 =========================================================================
 """
+
 class Emotion_Detector:
 
     def detect_emotion_function (self,user_message):
@@ -53,24 +59,17 @@ class Emotion_Detector:
                 "nervous"
             ]
         }
-        highest_matches = 0
-        detected_emotion = "neutral"
-
         for emotion,words in emotions.items ():
-
-            matches = 0
 
             for word in words:
 
                 if word in message:
-                    matches += 1
 
-            if matches > highest_matches:
-                highest_matches = matches
-                detected_emotion = emotion
-
-        if detected_emotion == "neutral":
-            confidence = 0.50
-        else:
-            confidence = min (0.60 + (highest_matches*0.15),0.98)
-        return detected_emotion,confidence
+                    return (
+                        emotion,
+                        0.95
+                    )
+        return (
+            "neutral",
+            0.60
+        )

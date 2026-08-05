@@ -24,30 +24,50 @@ class Semantic_Retriever:
         self.embedding_provider = embedding_provider
         self.similarity = Similarity ()
 
-    def retrieve_relevant_memories_function (self,user_message,top_k = Settings.MEMORY_TOP_K):
+    def retrieve_relevant_memories_function (
+        self,
+        user_message,
+        top_k = Settings.MEMORY_TOP_K
+    ):
 
-        query_embedding = self.embedding_provider.generate_embedding_function (user_message)
+        query_embedding = (
+            self.embedding_provider
+            .generate_embedding_function (user_message)
+        )
 
-        memories = self.database.get_all_embeddings_function ()
+        memories = (
+            self.database
+            .get_all_embeddings_function ()
+        )
 
         scored_memories = []
 
         for memory_id,memory_text,embedding in memories:
 
-            score = self.similarity.cosine_similarity_function (query_embedding,embedding)
+            score = self.similarity.cosine_similarity_function (
+                query_embedding,
+                embedding
+            )
 
-            scored_memories.append ((score, memory_text))
+            scored_memories.append (
+                (score,memory_text)
+            )
 
-        scored_memories.sort (reverse = True,key = lambda x: x [0])
-        threshold = Settings.MEMORY_SIMILARITY_THRESHOLD
-        filtered_memories = []
-        for score,memory in scored_memories:
-            if (score >= threshold):
-                 filtered_memories.append ((score,memory))
-        return filtered_memories [:top_k]
+            scored_memories.sort (
+                reverse = True,
+                key = lambda x: x [0]
+            )
 
-        print("\n========== Semantic Search ==========\n")
+            threshold = (
+                Settings.MEMORY_SIMILARITY_THRESHOLD
+            )
 
-        for score,memory in filtered_memories:
-            print (f"{score:.3f} -> {memory}")
-        print ()
+            filtered_memories = []
+
+            for score,memory in scored_memories:
+
+                if score >= threshold:
+
+                    filtered_memories.append (memory)
+
+            return filtered_memories [:top_k]

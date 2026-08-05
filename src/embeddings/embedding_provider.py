@@ -24,12 +24,12 @@ from src.config.settings import Settings
 class Embedding_Provider:
     def __init__(self):
 
-        print (f"[Embedding] Loading embedding model !!")
+        print (f"Loading embedding model !!")
         print ()
 
         self.model = SentenceTransformer (Settings.EMBEDDING_MODEL)
 
-        print (f"[Embedding] Model loaded successfully !!")
+        print (f"Embedding model loaded successfully !!")
         print ()
 
     def generate_embedding_function (self,text):

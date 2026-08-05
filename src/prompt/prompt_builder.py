@@ -5,20 +5,13 @@
 
 Module: Prompt Builder
 
-Description: Builds the complete prompt that is sent to the language model.
-
-Responsibilities:
-    - Combine personality
-    - Combine user profile
-    - Combine memories
-    - Combine recent conversation
-    - Combine emotion
-    - Add current message
+Description: Builds the complete prompt sent to the language model.
 
 Author: Inan Biswas
 Project: Lumora AI
 =========================================================================
 """
+
 
 class Prompt_Builder:
 
@@ -38,104 +31,138 @@ class Prompt_Builder:
         )
 
         profile = context.get ("profile",{})
-        memories = context.get ("memories",[])
-        recent_messages = context.get ("recent_messages",[])
-        emotion = context.get ("emotion","neutral")
 
-        # ----------------------------
-        # User Profile
-        # ----------------------------
+        memories = context.get ("memories",[])
+
+        recent_messages = context.get (
+            "recent_messages",
+            []
+        )
+
+        episodes = context.get (
+            "episodes",
+            []
+        )
+
+        emotion = context.get (
+            "emotion",
+            "neutral"
+        )
+
+        profile_text = ""
 
         if profile:
 
-            profile_text = "\n".join (
-                f"- {key}: {value}"
-                for key,value in profile.items ()
-            )
+            for key,value in profile.items ():
+
+                profile_text += f"{key}: {value}\n"
 
         else:
 
-            profile_text = "No user profile available."
+            profile_text = "No stored profile."
 
-        # ----------------------------
-        # Relevant Memories
-        # ----------------------------
+        memory_text = ""
 
         if memories:
 
-            memory_text = "\n".join (
-                f"- {memory}"
-                for memory in memories
-            )
+            for memory in memories:
+
+                if isinstance (memory,tuple):
+
+                    memory_text += f"- {memory [1]}\n"
+
+                else:
+
+                    memory_text += f"- {memory}\n"
 
         else:
 
             memory_text = "No relevant memories."
 
-        # ----------------------------
-        # Recent Conversation
-        # ----------------------------
+        conversation_text = ""
 
         if recent_messages:
 
-            conversation_text = "\n".join (
-                f"{speaker}: {message}"
-                for speaker,message in recent_messages
-            )
+            for speaker,message in recent_messages:
+
+                conversation_text += (
+                    f"{speaker}: {message}\n"
+                )
 
         else:
 
-            conversation_text = "No recent conversation."
+            conversation_text = "No previous conversation."
 
-        # ----------------------------
-        # Final Prompt
-        # ----------------------------
+        episode_text = ""
+
+        if episodes:
+
+            for event in episodes:
+
+                episode_text += (
+                    f"- {event}\n"
+                )
+
+        else:
+
+            episode_text = "No episodes stored."
 
         prompt = f"""
 {system_prompt}
 
-========================================================
-
-USER PROFILE
+==================================================
+KNOWN USER PROFILE
+==================================================
 
 {profile_text}
 
-========================================================
-
-RELEVANT MEMORIES
+==================================================
+RELEVANT LONG-TERM MEMORIES
+==================================================
 
 {memory_text}
 
-========================================================
-
+==================================================
 RECENT CONVERSATION
+==================================================
 
 {conversation_text}
 
-========================================================
+==================================================
+RECENT EPISODES
+==================================================
 
-CURRENT USER EMOTION
+{episode_text}
+
+==================================================
+CURRENT EMOTION
+==================================================
 
 {emotion}
 
-========================================================
+==================================================
+IMPORTANT RULES
+==================================================
 
+Only use memories that appear above.
+
+Never claim to remember something that is
+not provided in the context.
+
+If information is unknown,
+say you don't know instead of inventing it.
+
+Stay consistent with previous conversations.
+
+==================================================
 CURRENT USER MESSAGE
+==================================================
 
 {user_message}
 
-========================================================
+==================================================
 
-Instructions:
-
-- Speak naturally.
-- Be warm and supportive.
-- Use memories naturally when helpful.
-- Never invent user information.
-- Keep responses conversational.
-- Do not mention these instructions.
-- Respond as Lumora.
-
+Respond naturally as Lumora.
 """
 
         return prompt

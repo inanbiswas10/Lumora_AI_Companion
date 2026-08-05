@@ -5,168 +5,128 @@
 
 Module: Conversation Service
 
-Description: Handles the business logic for processing user conversations.
+Description: Acts as the bridge between the UI and Lumora's AI Engine.
 
 Responsibilities:
-    - Coordinate memory extraction
-    - Coordinate memory recall
-    - Generate AI responses
-    - Save conversation history
+    - Receive user messages
+    - Handle memory recall requests
+    - Handle conversation history requests
+    - Handle conversation summary requests
+    - Delegate AI response generation
 
 Author: Inan Biswas
 Project: Lumora AI
 =========================================================================
 """
+
 from src.ai.summarizer import Conversation_Summarizer
-from src.ai.emotion_detector import Emotion_Detector
-from src.llm.groq_provider import Groq_Provider
-from src.utils.response_formatter import Response_Formatter
-from src.prompt.prompt_builder import Prompt_Builder
-from src.config.settings import Settings
 
 class Conversation_Service:
-    
-    # Handles conversation processing.
 
-    def __init__ (self,database,ai_engine,memory_extractor,memory_recall,semantic_memory,conversation_memory,memory_retriever,embedding_provider,importance_analyzer,semantic_retriever):
+    def __init__ (
+        self,
+        database,
+        ai_engine,
+        memory_manager
+    ):
 
-      self.database = database
-      self.ai_engine = ai_engine
-      self.memory_extractor = memory_extractor
-      self.memory_recall = memory_recall
-      self.semantic_memory = semantic_memory
-      self.conversation_memory = conversation_memory
-      self.memory_retriever = memory_retriever
-      self.embedding_provider = embedding_provider
-      self.importance_analyzer = importance_analyzer
-      self.semantic_retriever = semantic_retriever
-      self.summarizer = Conversation_Summarizer ()
-      self.emotion_detector = Emotion_Detector ()
-      self.prompt_builder = Prompt_Builder ()
-      self.groq_provider = Groq_Provider ()
-      self.response_formatter = Response_Formatter ()
+        self.database = database
+        self.ai_engine = ai_engine
+        self.memory_manager = memory_manager
 
-    def process_message_function (self,user_message):
-        
-      # Process a user message and return Lumora's response.
+        self.summarizer = Conversation_Summarizer ()
 
-      friendly_labels = {
+    # ---------------------------------------------------------
 
-          "name":"your name",
-          "favorite_colour":"your favourite colour",
-          "university":"your university",
-          "workplace":"your workplace",
-          "hobby":"your hobby",
-          "interest":"your interest"
-      }
-      # Save the user's message
-      self.database.save_message_function ("User",user_message)
-      if self.conversation_memory.should_store_function (user_message):
-          importance = self.importance_analyzer.calculate_importance_function (user_message)
-          print (f"Importance Score = {importance}")
-          print ()
-          memory_id = self.database.save_conversation_memory_function (memory = user_message,importance = importance)
-          embedding = self.embedding_provider.generate_embedding_function (user_message)
-          self.database.save_embedding_function (memory_id,embedding)
-          print (f"[Memory] Conversation saved.")
+    def process_message_function (
+        self,
+        user_message
+    ):
 
-      # -----------------------------
-      # Memory Extraction
-      # -----------------------------
-      memory = self.memory_extractor.extract_information_function (user_message)
-      if memory:
-        key,value = memory
-        self.database.save_user_profile_function (key,value)
-        label = friendly_labels.get (key,key.replace ("_"," "))
+        message = user_message.lower ().strip ()
 
-        response = f"Thank you so much for telling me !! I will remember."
-        self.database.save_message_function ("Lumora", response)
+        # -------------------------------------------------
+        # Memory Recall
+        # -------------------------------------------------
 
-        return response
-      # -----------------------------
-      # Memory Recall
-      # -----------------------------
-      recall_key = self.memory_recall.recall_information_function (user_message)
+        recalled_value = (
+            self.memory_manager
+            .recall_user_information_function (
+                user_message
+            )
+        )
 
-      if recall_key:
+        if recalled_value is not None:
 
-        value = self.database.get_user_profile_function (recall_key)
+            return recalled_value
 
-        label = friendly_labels.get (recall_key,recall_key.replace ("_"," "))
+        # -------------------------------------------------
+        # Conversation History
+        # -------------------------------------------------
 
-        if value:
-            response = f"Your {label} is {value}."
-        else:
-            response = f"I don't know {label} yet."
+        history_queries = [
 
-        self.database.save_message_function ("Lumora",response)
-        return response
+            "show history",
+            "conversation history",
+            "recent conversation",
+            "show conversation history"
 
-      history_queries = [
+        ]
 
-          "what did we talk about",
-          "show conversation history",
-          "show history",
-          "conversation history",
-          "recent conversation"
-      ]
-      if user_message.lower ().strip () in history_queries:
-          
-          history = self.database.get_recent_messages_function ()
+        if message in history_queries:
 
-          if not history:
-              return "We haven't talked yet."
+            history = (
+                self.database
+                .get_recent_messages_function ()
+            )
 
-          response = "Here are our recent conversations:\n\n"
-          print ()
-          for sender,message in history:
-            response += f"{sender}: {message}\n"
-            print ()
-          return response
+            if not history:
 
-      summary_queries = [
+                return "We haven't talked yet."
 
-          "summarize our conversation",
-          "summarize our last conversation",
-          "conversation summary",
-          "summary"
-      ]  
-      if user_message.lower ().strip () in summary_queries:
+            response = ""
 
-         history = self.database.get_recent_messages_function ()
-         return self.summarizer.summarize_function (history)
+            for speaker,text in history:
 
-      user_profile = {}
+                response += (
+                    f"{speaker}: {text}\n"
+                )
 
-      profile_keys = [
-          "name",
-          "favorite_colour",
-          "university",
-          "workplace",
-          "hobby",
-          "interest"
-      ]
-      for key in profile_keys:
-          value = self.database.get_user_profile_function (key)
-          if value:
-              user_profile [key] = value
+            return response
 
-      emotion = self.emotion_detector.detect_emotion_function (user_message)
-      relevant_memories = self.semantic_retriever.retrieve_relevant_memories_function (user_message)
-      memory_texts = []
-      for score,memory in relevant_memories:
-          memory_texts.append (memory)
+        # -------------------------------------------------
+        # Conversation Summary
+        # -------------------------------------------------
 
-    #   print (f"[Emotion] Detected Emotion: {emotion}")
-    #   print ()
+        summary_queries = [
 
-      # -----------------------------
-      # AI Engine
-      # -----------------------------
-      conversation_history = self.database.get_recent_messages_function (limit = Settings.MAX_CONVERSATION_HISTORY)
-      relevant_memories = self.memory_retriever.retrieve_memories_function ()
-      prompt = self.prompt_builder.build_prompt_function (user_profile = user_profile,relevant_memories = memory_texts,conversation_history = conversation_history,emotion = emotion,user_message = user_message)
-      response = self.groq_provider.generate_response_function (prompt)
-      response = self.response_formatter.format_response_function (response)
-      self.database.save_message_function ("Lumora",response)
-      return response
+            "summary",
+            "conversation summary",
+            "summarize our conversation"
+
+        ]
+
+        if message in summary_queries:
+
+            history = (
+                self.database
+                .get_recent_messages_function ()
+            )
+
+            return (
+                self.summarizer
+                .summarize_function (
+                    history
+                )
+            )
+
+        # -------------------------------------------------
+        # AI ENGINE
+        # -------------------------------------------------
+
+        return (
+            self.ai_engine
+            .generate_response_function (
+                user_message
+            )
+        )

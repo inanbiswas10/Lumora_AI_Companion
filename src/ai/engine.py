@@ -5,38 +5,120 @@
 
 Module: AI Engine
 
-Description: This module is responsible for managing the core conversational intelligence of Lumora AI.
+Description: Central intelligence module of Lumora AI.
 
 Responsibilities:
-    - Process user queries
-    - Generate intelligent responses
-    - Communicate with language models
-    - Maintain conversation flow
-    - Support future prompt engineering
+    - Update memory
+    - Build conversation context
+    - Generate prompts
+    - Call the language model
+    - Format responses
+    - Save conversations
 
 Author: Inan Biswas
 Project: Lumora AI
 =========================================================================
 """
 
+from src.context.context_manager import Context_Manager
+
 class AI_Engine:
 
-    # Handles conversation responses for Lumora AI.
+    def __init__ (
+        self,
+        database,
+        memory_manager,
+        emotion_detector,
+        prompt_builder,
+        llm_provider,
+        response_formatter
+    ):
 
-    def generate_response_function (self,user_message:str) -> str:
+        self.database = database
+        self.memory_manager = memory_manager
 
-        # Generate a response based on the user's input.
+        self.context_manager = Context_Manager (
+            database,
+            memory_manager,
+            emotion_detector
+        )
 
-        message = user_message.lower ()
+        self.prompt_builder = prompt_builder
+        self.llm_provider = llm_provider
+        self.response_formatter = response_formatter
 
-        if "hello" in message or "hi" in message:
-            return ("Hello dear !!")
+    # ---------------------------------------------------------
 
-        elif "how are you" in message:
-            return ("I am doing well dear. Thank you so much for asking !!")
+    def generate_response_function (self,user_message):
 
-        elif "bye" in message:
-            return ("Goodbye dear !! Thank you so much for talking to me.")
-        
-        else:
-            return ("That sounds very interesting dear !! I am still under development but I would really love to know more about it.")
+        # ------------------------------------------
+        # Save user message
+        # ------------------------------------------
+
+        self.database.save_message_function (
+            "User",
+            user_message
+        )
+
+        # ------------------------------------------
+        # Update memory
+        # ------------------------------------------
+
+        self.memory_manager.process_user_message_function (
+            user_message
+        )
+
+        # ------------------------------------------
+        # Build context
+        # ------------------------------------------
+
+        context = (
+            self.context_manager
+            .build_context_function (
+                user_message
+            )
+        )
+
+        # ------------------------------------------
+        # Build prompt
+        # ------------------------------------------
+
+        prompt = (
+            self.prompt_builder
+            .build_prompt_function (
+                user_message,
+                context
+            )
+        )
+
+        # ------------------------------------------
+        # Generate response
+        # ------------------------------------------
+
+        response = (
+            self.llm_provider
+            .generate_response_function (
+                prompt
+            )
+        )
+
+        # ------------------------------------------
+        # Format response
+        # ------------------------------------------
+
+        response = (
+            self.response_formatter
+            .format_response_function (
+                response
+            )
+        )
+
+        # ------------------------------------------
+        # Save Lumora response
+        # ------------------------------------------
+
+        self.database.save_message_function (
+            "Lumora",
+            response
+        )
+        return response

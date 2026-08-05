@@ -27,14 +27,14 @@ class Conversation_Controller:
     def __init__ (self,conversation_service):
         self.conversation_service = conversation_service
 
-        print (f"[Controller] Conversation Controller Initialized Successfully !!")
+        print (f"Conversation Controller Initialized Successfully !!")
         print ()
 
     def start_function (self):
         
         # Start the conversation system.
       
-        print (f"[Controller] Lumora AI is ready to communicate !!")
+        print (f"Lumora AI is ready to communicate !!")
         print ()
         print (f"Type 'exit' to close Lumora AI.\n")
 
